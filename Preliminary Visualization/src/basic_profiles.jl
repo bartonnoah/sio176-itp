@@ -32,7 +32,7 @@ varunits = ["g/kg", "ºC", "kg/m^3"]
 colors = [:haline, :thermal, :dense]
 
 for (name, data, unit, color) in zip(varnames, vardata, varunits, colors)
-    p = contourf(times_expanded, depth, data; title = "$name vs pressure and time", xlabel = "time", ylabel = "Depth (m)", colorbar_title = "$name ($unit)", yflip=true, c = color, dpi = 1200)
+    p = contourf(times_expanded, depth, data; title = "$name vs depth and time", xlabel = "time", ylabel = "Depth (m)", colorbar_title = "$name ($unit)", yflip=true, c = color, dpi = 1200)
     display(p)
     savefig(p,joinpath(visdir, "$name.png"))
 end
