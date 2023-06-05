@@ -41,7 +41,6 @@ end
 #Now plot
 p = contourf(num_times, depths, cons_temp, cmap = :inferno)
 plt.colorbar(mappable = p, label = "Conservative Temperature (ºC)")
-gca().invert_yaxis()
 plt.title("Conservative Temperature with Density Overlay")
 plt.xlabel("Time")
 plt.ylabel("Depth(m)")
@@ -57,6 +56,7 @@ cs = contour(num_times, depths, pot_dens_anom; colors = "grey")
 label_yvals = [30, 40, 50, 120, 210]
 label_pos = tuple.(Dates.value(Date(2021, 11, 28)), label_yvals)
 gca().clabel(cs, cs.levels, inline=true)
+gca().invert_yaxis()
 
 plt.tight_layout()
 savefig(joinpath(visdir, "pot_dens_on_cons_temp.png"))
