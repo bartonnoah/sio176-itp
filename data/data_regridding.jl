@@ -53,9 +53,24 @@ cons_temp = gsw_ct_from_t.(abs_sal, temp_trimmed, pres_trimmed)
 depth = -1 .* gsw_z_from_p.(pres_trimmed, lat_trimmed, 0, 0)
 pot_dens_anom = gsw_sigma0.(abs_sal, cons_temp)
 
+#Now calculate mixed layer depth
+diff_array = copy(pot_dens_anom)
+mixed_pres = permutedims(zeros(size(diff_array, 2))')
+
+for (i,col) in enumerate(eachcol(diff_array))
+    col .-= first(filter(x->!isnan(x), col))
+    mixed_idx = findfirst(x -> (x>0.03), col)
+    if (mixed_idx) === nothing || (findfirst(!isnan, col) > 10)
+        mixed_depths[i] = NaN
+        col .= NaN
+        continue
+    end
+    mixed_pres[i] = pres_trimmed[mixed_idx, i]
+end
+
 datadict = Dict("time"=>time_trimmed, "pres"=>pres_trimmed, "temp"=>temp_trimmed, "sal"=>sal_trimmed, 
                 "lat"=>lat_trimmed, "lon"=>lon_trimmed, "abs_sal"=>abs_sal, "cons_temp"=>cons_temp, "depth"=>depth,
-                "pot_dens_anom"=>pot_dens_anom, "Description"=>"Interpolated values for all major variables, with first and last profile dropped due to inability to interpolate them properly")
+                "pot_dens_anom"=>pot_dens_anom, "Description"=>"Interpolated values for all major variables, with first and last profile dropped due to inability to interpolate them properly", "mixed_layer_pressure"=>mixed_pres )
 
 matwrite("interpolated_vars.mat", datadict)
 
