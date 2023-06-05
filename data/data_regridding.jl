@@ -58,13 +58,8 @@ diff_array = copy(pot_dens_anom)
 mixed_pres = permutedims(zeros(size(diff_array, 2))')
 
 for (i,col) in enumerate(eachcol(diff_array))
-    col .-= col[5]
+    col .-= first(col)
     mixed_idx = findfirst(x -> (x>0.03), col)
-    if (mixed_idx) === nothing || (findfirst(!isnan, col) > 10)
-        mixed_depths[i] = NaN
-        col .= NaN
-        continue
-    end
     mixed_pres[i] = pres_trimmed[mixed_idx, i]
 end
 
