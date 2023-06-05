@@ -18,12 +18,12 @@ lats = data["latitude"]
 
 lons = data["longitude"]
 
-proj = ccrs.Orthographic(central_longitude = mean(lons), central_latitude = mean(lats))
+proj = ccrs.NorthPolarStereo()
 
 ax = plt.subplot(111, projection = proj)
 ax.coastlines()
 
-mappable = ax.scatter(lons, lats; c = Dates.value.(times), transform = ccrs.PlateCarree())
+mappable = ax.scatter(lons, lats; c = Dates.value.(times), transform = ccrs.PlateCarree(), s=1)
 
 tick_dates = range(extrema(times)...; step = Month(3))
 tick_vals = Dates.value.(tick_dates)
@@ -32,29 +32,14 @@ tick_labels = Dates.format.(tick_dates, dateformat"yyyy-mm-dd")
 cbar = plt.colorbar(mappable; ticks = tick_vals)
 cbar.ax.set_yticklabels(tick_labels)
 
-label_lats = range(extrema(lats)...; length = 4)
-label_lons = range(extrema(lons)...; length = 4)
 
-gl = ax.gridlines(crs=ccrs.PlateCarree(), color="black", linewidth=1, linestyle="dotted")
-gl.ylocator = mticker.FixedLocator(label_lats)
-gl.xlocator = mticker.FixedLocator(label_lons)
-gl.xformatter = LONGITUDE_FORMATTER
-gl.yformatter = LATITUDE_FORMATTER
-
-minlat = mean(label_lats)
-minlon = mean(label_lons)
-
-for lon in label_lons
-    ax.text(lon, minlat, "$(round(lon, digits=1))ºE", transform = ccrs.PlateCarree())
-end
-
-for lat in label_lats
-    ax.text(minlon, lat, "$(round(lat, digits=1))ºN", transform = ccrs.PlateCarree())
-end
-
-plt.scatter([lons[begin]],[lats[begin]]; label="Start", color="pink", transform = ccrs.PlateCarree())
-plt.scatter([lons[end]],[lats[end]]; label="End", color="red", transform = ccrs.PlateCarree())
+plt.scatter([lons[begin]],[lats[begin]]; label="Start", color="pink", transform = ccrs.PlateCarree(),s=2)
+plt.scatter([lons[end]],[lats[end]]; label="End", color="red", transform = ccrs.PlateCarree(),s=2)
+plt.gca().gridlines(draw_labels=true, dms=true, x_inline=false, y_inline=false)
 plt.legend()
+loncirc = -180:2:180
+lat = fill(60, length(loncirc))
+ax.scatter(loncirc, lat; transform=ccrs.PlateCarree(), alpha=0)
 
 plt.title("Drifter Positions as a function of time")
 plt.tight_layout()
