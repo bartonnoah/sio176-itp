@@ -14,7 +14,7 @@ times = @. Millisecond(round(Int, data["time"] * milliseconds_in_day)) + DateTim
 
 #Do a PCA using conservative temp and abs salinity as the two variables of interest
 #Flatten and combine the datasets, and then center and whiten
-pca_datasets = (cons_temp', abs_sal', data["mixed_layer_pressure"])
+pca_datasets = (cons_temp', abs_sal', data["smooth_mixed_layer_pressure"])
 pca_data = hcat(pca_datasets...)
 dataset_indicators = hcat((fill(i, size(dataset)) for (i, dataset) in enumerate(pca_datasets))...)
 subsetnums = 1:length(pca_datasets)
@@ -38,7 +38,7 @@ principal_components = pca_data * V
 for pcnum in 1:5
     pc = V[:, pcnum]
     tempsize = size(cons_temp, 1)
-    scalefactor = 25
+    scalefactor = 1.
     pctemp = pc[1:tempsize] * scalefactor
     pcsal = pc[tempsize+1:2*tempsize] * scalefactor
     pcmixed = pc[end] * scalefactor
@@ -59,8 +59,8 @@ end
 #Now plot a time series of the PCA components
 times = @. Millisecond(round(Int, data["time"] * milliseconds_in_day)) + DateTime(0,1,1)
 
-myp = plot(;title="PCA Components over time", xlabel = "Time", ylabel = "Value")
-for i in 1:5
+myp = plot(;title="Principal components over time", xlabel = "Time", ylabel = "Value")
+for i in 1:3
     plot!(times[:], principal_components[:, i]; label = "$i")
 end
 
