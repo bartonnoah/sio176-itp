@@ -13,7 +13,7 @@ milliseconds_in_day = Dates.value(Millisecond(Day(1)))
 times = @. Millisecond(round(Int, data["time"] * milliseconds_in_day)) + DateTime(0,1,1)
 
 varnames = ["Absolute salinity", "Conservative temperature", "Potential density anomaly"]
-vardata = [data["abs_sal_denoised"], data["cons_temp_denoised"], data["pot_dens_anom"]]
+vardata = [data["abs_sal_denoised"], data["cons_temp_denoised"], data["pot_dens_anom_denoised"]]
 varunits = ["g/kg", "ºC", "kg/m^3"]
 colors = [:haline, :thermal, :dense]
 
