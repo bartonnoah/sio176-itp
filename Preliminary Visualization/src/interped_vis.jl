@@ -25,3 +25,12 @@ for (name, data, unit, color) in zip(varnames, vardata, varunits, colors)
     display(p)
     savefig(p,joinpath(visdir, "interp_$name.png"))
 end
+
+zoom_idxs = (1:200, Colon())
+
+for (name, datamat, unit, color) in zip(varnames, vardata, varunits, colors)
+    p = contourf(times_expanded[zoom_idxs...], depth[zoom_idxs...], datamat[zoom_idxs...]; title = "Smoothed $name vs depth and time", xlabel = "time", ylabel = "Depth (m)", colorbar_title = "$name ($unit)", yflip=true, c = color, dpi = 1200)
+    plot!(p, times[:], data["smooth_mixed_layer_pressure"]; label="")
+    display(p)
+    savefig(p,joinpath(visdir, "zoomed_interp_$name.png"))
+end
