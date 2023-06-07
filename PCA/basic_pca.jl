@@ -14,7 +14,7 @@ times = @. Millisecond(round(Int, data["time"] * milliseconds_in_day)) + DateTim
 
 #Do a PCA using conservative temp and abs salinity as the two variables of interest
 #Flatten and combine the datasets, and then center and whiten
-pca_datasets = (cons_temp', abs_sal', data["smooth_mixed_layer_pressure"])
+pca_datasets = (cons_temp', abs_sal')
 pca_data = hcat(pca_datasets...)
 dataset_indicators = hcat((fill(i, size(dataset)) for (i, dataset) in enumerate(pca_datasets))...)
 subsetnums = 1:length(pca_datasets)
@@ -23,7 +23,7 @@ pca_data .-= mean(pca_data, dims = 1)
 #whiten, accounting for the fact that small temp variations shouldn't count the same as large ones
 for i in subsetnums
     subset = @view pca_data[dataset_indicators .== i]
-    subset ./= mad(subset; center=0.)
+    subset ./= std(subset)
 end
 
 #Calculate the svd
@@ -41,13 +41,11 @@ for pcnum in 1:5
     scalefactor = 1.
     pctemp = pc[1:tempsize] * scalefactor
     pcsal = pc[tempsize+1:2*tempsize] * scalefactor
-    pcmixed = pc[end] * scalefactor
 
     #Now plot the data
     p1 = plot(pctemp, presvals; yflip=true, label="")
     plot!(p1, xlabel = "Conservative Temp Deviation(ºC) ", ylabel = "Pressure (dbar)")
     p2 = plot(pcsal, presvals; yflip=true, label="") 
-    annotate!(p2, ((0.4, 0.9), Plots.text("Mixed Layer: $(round(pcmixed, digits=4))dbar", 10)))
     plot!(p2, xlabel = "Absolute Salinity Deviation (g/kg) ")
 
     #Now put them into a layout
