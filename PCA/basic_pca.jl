@@ -1,5 +1,6 @@
 using LinearAlgebra, MAT, Plots, StatsBase, Dates
 
+gr()
 cd(@__DIR__)
 datafile = "../data/interpolated_vars.mat"
 
@@ -21,9 +22,12 @@ subsetnums = 1:length(pca_datasets)
 pca_data .-= mean(pca_data, dims = 1)
 
 #whiten, accounting for the fact that small temp variations shouldn't count the same as large ones
+scalefactor = []
 for i in subsetnums
     subset = @view pca_data[dataset_indicators .== i]
-    subset ./= std(subset)
+    dev = std(subset)
+    subset ./= dev
+    push!(scalefactor, dev)
 end
 
 #Calculate the svd
@@ -38,14 +42,13 @@ principal_components = pca_data * V
 for pcnum in 1:5
     pc = V[:, pcnum]
     tempsize = size(cons_temp, 1)
-    scalefactor = 1.
-    pctemp = pc[1:tempsize] * scalefactor
-    pcsal = pc[tempsize+1:2*tempsize] * scalefactor
+    pctemp = pc[1:tempsize] * scalefactor[1]
+    pcsal = pc[tempsize+1:2*tempsize] * scalefactor[2]
 
     #Now plot the data
-    p1 = plot(pctemp, presvals; yflip=true, label="")
+    p1 = plot(pctemp, presvals; yflip=true, label="", rotation=20)
     plot!(p1, xlabel = "Conservative Temp Deviation(ºC) ", ylabel = "Pressure (dbar)")
-    p2 = plot(pcsal, presvals; yflip=true, label="") 
+    p2 = plot(pcsal, presvals; yflip=true, label="", rotation=20) 
     plot!(p2, xlabel = "Absolute Salinity Deviation (g/kg) ")
 
     #Now put them into a layout
@@ -57,11 +60,12 @@ end
 #Now plot a time series of the PCA components
 times = @. Millisecond(round(Int, data["time"] * milliseconds_in_day)) + DateTime(0,1,1)
 
-myp = plot(;title="Principal components over time", xlabel = "Time", ylabel = "Value")
 for i in 1:3
-    plot!(times[:], principal_components[:, i]; label = "$i")
+    plot(;title="PC $i over time", xlabel = "Time", ylabel = "Value")
+    plot!(times[:], principal_components[:, i], label="")
+    savefig("pca$(i)_over_time.png")
 end
 
-savefig(myp, "pca_over_time.png")
+
 
 
