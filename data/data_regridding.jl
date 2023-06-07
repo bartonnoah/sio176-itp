@@ -64,7 +64,7 @@ for (i,col) in enumerate(eachcol(diff_array))
 end
 
 #Now finally add a median filter version to reduce noise
-patch_size = (9,21)
+patch_size = (3,19) # Each colindex is 2db apart and each row index is 12hr apart
 denoised_cons_temp = mapwindow(median, cons_temp, patch_size)
 denoised_abs_sal =mapwindow(median, abs_sal, patch_size)
 denoised_pot_dens =mapwindow(median, pot_dens_anom, patch_size)
