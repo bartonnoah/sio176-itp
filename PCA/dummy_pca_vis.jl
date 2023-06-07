@@ -1,5 +1,6 @@
 using LinearAlgebra, MAT, Plots, StatsBase, Dates
 
+pyplot()
 cd(@__DIR__)
 datafile = "../data/interpolated_vars.mat"
 
@@ -35,9 +36,10 @@ deviations_from_mean(x) = (x.-mean(x))./std(x)
 
 #Now plot original data
 p = scatter(tempdat, saldat; xlabel = "Conservative Temperature (ºC)", ylabel = "Absolute Salinity (g/kg)", 
-title = "Sample PCA: Temp and Sal at 10db", label = "")
-quiver!(p, [data_means[1] ], [data_means[2] ], quiver = (V[1, [1]], V[2, [1]]); aspect_ratio = :equal, lw = 4, label = "PC 1")
-quiver!(p, [data_means[1] ], [data_means[2] ], quiver = (V[1, [2]], V[2, [2]]); aspect_ratio = :equal, lw = 4, label = "PC 2")
+title = "Sample PCA: Temp and Sal at 10db", label = "", aspect_ratio = :equal)
+quiver!(p, [data_means[1] ], [data_means[2] ], quiver = (V[1, [1]], V[2, [1]]); lw = 4, label = "PC 1")
+quiver!(p, [data_means[1] ], [data_means[2] ], quiver = (V[1, [2]], V[2, [2]]); lw = 4, label = "PC 2")
+plot!(p, xticks = (-2.4:0.4:-1.2))
 
 savefig(p, "example_pca.png")
 

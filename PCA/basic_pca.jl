@@ -1,6 +1,6 @@
 using LinearAlgebra, MAT, Plots, StatsBase, Dates
 
-gr()
+pyplot()
 cd(@__DIR__)
 datafile = "../data/interpolated_vars.mat"
 
@@ -8,10 +8,14 @@ datafile = "../data/interpolated_vars.mat"
 data = matread(datafile)
 cons_temp = data["cons_temp_denoised"]
 abs_sal = data["abs_sal_denoised"]
-presvals = data["pres"][:,1] #pressure is a regular grid
+pres = data["pres"]
+presvals = pres[:,1] #pressure is a regular grid
 
 milliseconds_in_day = Dates.value(Millisecond(Day(1)))
 times = @. Millisecond(round(Int, data["time"] * milliseconds_in_day)) + DateTime(0,1,1)
+times_expanded = repeat(times, size(abs_sal, 1))
+
+top_400_m_idxs = (1:200, Colon())
 
 #Do a PCA using conservative temp and abs salinity as the two variables of interest
 #Flatten and combine the datasets, and then center and whiten
@@ -55,6 +59,18 @@ for pcnum in 1:5
     l = @layout [a b]
     p = plot(p1, p2, layout = l, plot_title = "Principal component $pcnum ($(perc_var[pcnum])% of variance)", plot_title_fontsize = 12, figsize = (10,10))
     savefig(p, "PC$(pcnum).png")
+
+    #Now make a more comprehensible plot
+    display(pctemp .* principal_components[:, pcnum]')
+    tempdeviation_over_time = pctemp .* principal_components[:, pcnum]'
+    saldeviation_over_time = pcsal .* principal_components[:, pcnum]'
+
+    contourf(times_expanded[top_400_m_idxs...], pres[top_400_m_idxs...], tempdeviation_over_time[top_400_m_idxs...],
+    title = "PC $pcnum Conservative Temperature", xlabel = "Time", ylabel = "Pressure (dbar)", colorbar_title = "Conservative Temperature Anomaly (ºC)", color = :thermal, yflip = true)
+    savefig("pc_$(pcnum)_temp_vis.png")
+    contourf(times_expanded[top_400_m_idxs...], pres[top_400_m_idxs...], saldeviation_over_time[top_400_m_idxs...],
+    title = "PC $pcnum Absolute Salinity", xlabel = "Time", ylabel = "Pressure (dbar)", colorbar_title = "Conservative Temperature Anomaly (ºC)", color = :haline, yflip = true)
+    savefig("pc_$(pcnum)_sal_vis.png")
 end
 
 #Now plot a time series of the PCA components
