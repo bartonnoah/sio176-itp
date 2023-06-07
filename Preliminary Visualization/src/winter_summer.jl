@@ -23,7 +23,7 @@ comp_idxs = findfirst.([==(d) for d in comp_dates], Ref(times[:]))
 for (var, varname, unit) in zip(["cons_temp", "abs_sal"], ["Conservative Temperature", "Absolute Salinity"], ["ºC", "g/kg"])
     myp = plot(;title = "$varname on $(comp_names[1]) and $(comp_names[2])", ylabel = "Depth (m)", xlabel = "$varname ($unit)")
     for (idx, dayname) in zip(comp_idxs, comp_names)
-        plot!(myp, derived_vars[var][:, idx], derived_vars["depth"][:, idx]; label = dayname, yflip = true)
+        plot!(myp, derived_vars[var][:, idx], derived_vars["depth"][:, idx]; label = dayname, yflip = true, dpi=1200)
     end
     savefig(myp, joinpath(visdir, "$varname comparison.png"))
 end
