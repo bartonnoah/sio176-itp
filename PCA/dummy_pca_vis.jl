@@ -14,8 +14,10 @@ times = @. Millisecond(round(Int, data["time"] * milliseconds_in_day)) + DateTim
 
 #Do a PCA using conservative temp and abs salinity as the two variables of interest
 #Flatten and combine the datasets, and then center and whiten
-saldat = abs_sal[3,:]
-tempdat = cons_temp[3,:]
+decibars = 60
+idx = decibars ÷ 2 - 2
+saldat = abs_sal[idx,:]
+tempdat = cons_temp[idx,:]
 pca_datasets = (tempdat, saldat)
 pca_data = hcat(pca_datasets...)
 dataset_indicators = hcat((fill(i, size(dataset)) for (i, dataset) in enumerate(pca_datasets))...)
@@ -36,10 +38,9 @@ deviations_from_mean(x) = (x.-mean(x))./std(x)
 
 #Now plot original data
 p = scatter(tempdat, saldat; xlabel = "Conservative Temperature (ºC)", ylabel = "Absolute Salinity (g/kg)", 
-title = "Sample PCA: Temp and Sal at 10db", label = "", aspect_ratio = :equal)
+title = "Sample PCA: Temp and Sal at $(decibars)db", label = "", aspect_ratio = :equal)
 quiver!(p, [data_means[1] ], [data_means[2] ], quiver = (V[1, [1]], V[2, [1]]); lw = 4, label = "PC 1")
 quiver!(p, [data_means[1] ], [data_means[2] ], quiver = (V[1, [2]], V[2, [2]]); lw = 4, label = "PC 2")
-plot!(p, xticks = (-2.4:0.4:-1.2))
 
 savefig(p, "example_pca.png")
 

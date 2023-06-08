@@ -15,7 +15,7 @@ milliseconds_in_day = Dates.value(Millisecond(Day(1)))
 times = @. Millisecond(round(Int, data["time"] * milliseconds_in_day)) + DateTime(0,1,1)
 times_expanded = repeat(times, size(abs_sal, 1))
 
-top_400_m_idxs = (1:200, Colon())
+top_idxs = (1:100, Colon())
 
 #Do a PCA using conservative temp and abs salinity as the two variables of interest
 #Flatten and combine the datasets, and then center and whiten
@@ -65,10 +65,10 @@ for pcnum in 1:5
     tempdeviation_over_time = pctemp .* principal_components[:, pcnum]'
     saldeviation_over_time = pcsal .* principal_components[:, pcnum]'
 
-    contourf(times_expanded[top_400_m_idxs...], pres[top_400_m_idxs...], tempdeviation_over_time[top_400_m_idxs...],
+    contourf(times_expanded[top_idxs...], pres[top_idxs...], tempdeviation_over_time[top_idxs...],
     title = "PC $pcnum Conservative Temperature", xlabel = "Time", ylabel = "Pressure (dbar)", colorbar_title = "Conservative Temperature Anomaly (ºC)", color = :thermal, yflip = true)
     savefig("pc_$(pcnum)_temp_vis.png")
-    contourf(times_expanded[top_400_m_idxs...], pres[top_400_m_idxs...], saldeviation_over_time[top_400_m_idxs...],
+    contourf(times_expanded[top_idxs...], pres[top_idxs...], saldeviation_over_time[top_idxs...],
     title = "PC $pcnum Absolute Salinity", xlabel = "Time", ylabel = "Pressure (dbar)", colorbar_title = "Conservative Temperature Anomaly (ºC)", color = :haline, yflip = true)
     savefig("pc_$(pcnum)_sal_vis.png")
 end
