@@ -69,7 +69,7 @@ for pcnum in 1:5
     title = "PC $pcnum Conservative Temperature", xlabel = "Time", ylabel = "Pressure (dbar)", colorbar_title = "Conservative Temperature Anomaly (ºC)", color = :thermal, yflip = true)
     savefig("pc_$(pcnum)_temp_vis.png")
     contourf(times_expanded[top_idxs...], pres[top_idxs...], saldeviation_over_time[top_idxs...],
-    title = "PC $pcnum Absolute Salinity", xlabel = "Time", ylabel = "Pressure (dbar)", colorbar_title = "Conservative Temperature Anomaly (ºC)", color = :haline, yflip = true)
+    title = "PC $pcnum Absolute Salinity", xlabel = "Time", ylabel = "Pressure (dbar)", colorbar_title = "Absolute Salinity Anomaly (g/kg)", color = :haline, yflip = true)
     savefig("pc_$(pcnum)_sal_vis.png")
 end
 
