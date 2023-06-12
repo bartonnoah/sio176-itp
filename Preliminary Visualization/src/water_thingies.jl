@@ -21,13 +21,15 @@ densgrid = gsw_sigma0.(salgrid, tempgrid')
 
 fig = Figure()
 ax = Axis(fig[1, 1],
-    title = "Water Mass Plot",
+    title = "Potential Density Anomaly Plot",
     ylabel = "Conservative Temperature (ºC)",
     xlabel = "Absolute Salinity (g/kg)"
 )
-scatterdata = scatter!(saldata, tempdata; color = depthdata)
-contour!(salgrid, tempgrid, densgrid; color = :black)
-Colorbar(fig[1, 1][1, 2], scatterdata; flipaxis = true, label = "Depth (m)")
+scatterdata = scatter!(saldata, tempdata; color = -1 .* depthdata, colormap = :viridis)
+contour!(salgrid, tempgrid, densgrid; color = :black, labels = true)
+
+myticks = -800:100:0
+Colorbar(fig[1, 1][1, 2], scatterdata; flipaxis = true, label = "Depth (m)", ticks = (myticks, string.(-1 .* myticks)))
 
 display(fig)
 save(joinpath(visdir, "density_scatterplot.png"), fig)
